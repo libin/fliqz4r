@@ -1,0 +1,180 @@
+= Fliqz4R
+
+Fliqz4R is a Ruby wrapper for Fliqz's Video Web Service and Search Web Service API.
+
+Author:: Libin Pan (mailto:libin.pan@savvica.com)
+License:: MIT
+Type:: Rails Web Services Plugin
+
+=== Requirements
+
+* SOAP4R gem library. At the time of this writing, the latest version 
+  was v1.5.8, which works fine. The stub files were created under 1.5.8,
+  and have been made some changes to work with SOAP4R gem versions.
+  
+  Please install SOAP4R as if you don't have it yet:
+  
+    sudo gem install soap4r
+  
+* Account ID from your Fliqz account
+  
+  Please register an account on Fliqz.com before your start. It is free 
+  at this moment:
+  
+  http://myvideos.fliqz.com/controlpanel/aspx/secure/RegisterForSelfServe.aspx
+  
+  Then you can find your account id from:
+  
+  http://myvideos.fliqz.com/ControlPanel/aspx/AccountInfo.aspx
+  
+=== Installation
+
+* Install Fliqz4R as a Rails plugin
+
+    script/plugin install http://svn.savvica.com/public/plugins/fliqz4r
+  
+  After the installation, you can find an extra yaml file under your config folder:
+  
+  config/fliqz_account.yml
+  
+  Please open this file and put your Fliqz account id into it. Save it before close.
+  
+* Or install Fliqz4R as a Ruby Gem
+  
+  Download fliqz4r gem from http://svn.savvica.com/public/plugins/fliqz4r/fliqz4r-0.1.0.gem
+  
+  Run this command:
+  
+    sudo gem install fliqz4r-0.1.0.gem
+  
+=== Getting Started
+
+* If you installed Fliqz4R as a Ruby Gem, please put
+    
+    require 'fliqz'
+  
+  at the top of your programs.
+  
+* If you installed Fliqz4R as a Rails plugin, there is no need for that.
+  
+=== Examples
+
+Say you have uploaded a video and Fliqz Uploader calls back tell you that:
+
+    video_id = '279272123d53d9473ea9352dca0dfdae'
+
+If you want to know more about this video, you can do:
+
+    fliqz = Fliqz::VideoAPI.new
+    video = fliqz.getVideoInfo(:VideoID => video_id)
+    @video_title = video.title # => 'Video 5'
+    @embed_tag = video.embed   # => '<object><embed...'
+
+Pretty simple.
+
+To use Fliqz Search Web Service, you need provide Fliqz Account ID.
+- If you installed as a Ruby Gem:
+
+    account_id = 'af3dc64631cd47438a495cc618ca83f2'
+    fliqz = Fliqz::SearchAPI.new(account_id)
+
+- If you installed as a Rails plugin:
+
+    fliqz = Fliqz::SearchAPI.new()
+
+If you want to search video by Upload Date:
+
+    title = fliqz.getByUploadDate(:pageSize => 5, :maxResult => 10).group.title 
+    # => 'Videos for account...'
+
+=== Format of Request
+
+* API calling methods are all listed in two files:
+  - For Video Web Services, please check lib/VideoServiceDriver.rb
+  - For Search Web Services, please check lib/VideoSearchServiceDriver.rb
+  
+* Parameters:
+  - For Video Web Services, please check lib/VideoServiceMappingRegistry.rb
+  - For Search Web Services, please check lib/VideoSearchServiceMappingRegistry.rb
+
+* Structure of parameters
+  - Please use hash to pass the parameters, such as :VideoID => video_id
+
+=== Response Object
+
+* All the structure of return objects are listed in:
+  - For Video Web Services, please check lib/VideoServiceMappingRegistry.rb
+  - For Search Web Services, please check lib/VideoSearchServiceMappingRegistry.rb
+
+
+= Fliqz Flash Uploader Helper
+
+Creates a embed tag that display a Fliqz Flash Uploader within an HTML page.
+
+To use Fliqz Flash Uploader helper, please install Fliqz4R as a Rails plugin for now.
+
+==== Examples
+* <tt>fliqz_uploader_tag</tt>
+  - Create an embedded Fliqz Flash Uploader with all the default 
+    options
+* <tt>fliqz_uploader_tag {:bgcolor => '#fff'}</tt>
+  - Create an embedded Fliqz Flash Uploader with white background 
+    color
+* <tt>fliqz_uploader_tag {:bgcolor => '#fff'}, {:fontColor => '#000'}</tt>
+  - Create an embedded Fliqz Flash Uploader with white background 
+    color and black font color
+
+==== Flash Options
+* <b>bgcolor</b>
+  - the background color of the Flash player; default '#869ca7'
+* <b>width</b>
+  - the width of the Flash player; default '450'
+* <b>height</b>
+  - the height of the Flash player; default '345'
+* <b>name</b>
+  - the name of the Flash player; default 'baseuploader'
+* <b>align</b>
+  - the align of the Flash player; default 'middle'
+* <b>play</b>
+  - the play option of the Flash player; default 'true'
+* <b>loop</b>
+  - the loop option of the Flash player; default 'false'
+* <b>quality</b>
+  - the quality option of the Flash player; default 'high'
+* <b>wmode</b>
+  - the wmode option of the Flash player; default 'transparent'
+* <b>allowscriptaccess</b>
+  - the allowscriptaccess option of the Flash player; default 'always'
+* <b>src</b>
+  - the src option of the Flash player; 
+    default 'http://upload.fliqz.com/base/swf/baseuploader.swf'
+
+==== Fliqz Options
+Please reference http://upload.fliqz.com/base/ for more detail on 
+these options.
+* <b>errorPage</b>
+  - A URL responses to unsuccessful upload; default nil
+* <b>successPage</b>
+  - A URL responses to successful upload; default 'http://upload.fliqz.com/base/htm/SuccessPage.htm'
+* <b>returnEmbedAndPerma</b>
+  - A Boolean parameter which determines the content of screen 
+    displayed by the uploader after a successful upload; default nil
+* <b>hideControlButtons</b>
+  - A Boolean parameter which engages a buttonless mode of operation.
+* <b>illegalFileTypes</b>
+  - This parameter restricts the list of file types uploadable by the 
+    uploader; default nil
+* <b>fontFamily</b>
+  - This overides the name of the default font family used by the text
+    elements; default nil
+* <b>fontColor</b>
+  - This overides the color of the font used by the text elements;
+    default nil
+
+=== Notes
+
+* You will need to be connected to the internet to utilize the remote features of the plugin
+  and to properly run the tests.
+* To run the tests type <tt>rake test</tt> in the console from the plugin's root directory.
+* If you installed as a Rails plugin, please make sure you already have the right account 
+  information defined in your config/fliqz_account.yml file.
